@@ -8,7 +8,7 @@
     </LazyHydrate>
 
     <div id="layout">
-      <nuxt :key="$route.fullPath"/>
+      <nuxt :key="$route.fullPath" />
 
       <LazyHydrate when-visible>
         <BottomNavigation />
@@ -36,8 +36,6 @@ import LazyHydrate from 'vue-lazy-hydration';
 import Notification from '~/components/Notification';
 
 export default {
-  name: 'DefaultLayout',
-
   components: {
     LazyHydrate,
     TopBar,
@@ -53,7 +51,11 @@ export default {
 </script>
 
 <style lang="scss">
-@import "~@storefront-ui/vue/styles";
+@import '~@storefront-ui/vue/styles';
+
+:root {
+  @include assign-color-variants(--c-primary, --_c-blue-primary);
+}
 
 #layout {
   box-sizing: border-box;
