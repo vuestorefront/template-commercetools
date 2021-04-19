@@ -28,6 +28,7 @@
       </SfAddress>
     </SfAddressPicker>
     <SfCheckbox
+      data-cy="billing-details-checkbox_isDefault"
       :selected="value"
       @change="$emit('input', $event)"
       name="setAsDefault"

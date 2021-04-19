@@ -16,6 +16,7 @@
     </SfAddressPicker>
     <SfCheckbox
       v-show="currentAddressId"
+      data-cy="shipping-details-checkbox_isDefault"
       :selected="value"
       @change="$emit('input', $event)"
       name="setAsDefault"

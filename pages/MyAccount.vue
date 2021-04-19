@@ -5,45 +5,45 @@
       :breadcrumbs="breadcrumbs"
     />
     <SfContentPages
-      v-e2e="'my-account-content-pages'"
+      data-cy="my-account_content-pages"
       title="My Account"
       :active="activePage"
       class="my-account"
       @click:change="changeActivePage"
     >
       <SfContentCategory title="Personal Details">
-        <SfContentPage title="My profile">
+        <SfContentPage data-cy="my-account-page_my-profile" title="My profile">
           <MyProfile />
         </SfContentPage>
 
-        <SfContentPage title="Shipping details">
+        <SfContentPage data-cy="my-account-page_shipping-details" title="Shipping details">
           <ShippingDetails />
         </SfContentPage>
 
-        <SfContentPage title="Billing details">
+        <SfContentPage data-cy="my-account-page_billing-details" title="Billing details">
           <BillingDetails />
         </SfContentPage>
 
-        <SfContentPage title="Loyalty card">
+        <SfContentPage data-cy="my-account-page_loyalty-card" title="Loyalty card">
           <LoyaltyCard />
         </SfContentPage>
 
-        <SfContentPage title="My newsletter">
+        <SfContentPage data-cy="my-account-page_my-newsletter" title="My newsletter">
           <MyNewsletter />
         </SfContentPage>
       </SfContentCategory>
 
       <SfContentCategory title="Order details">
-        <SfContentPage title="Order history">
+        <SfContentPage data-cy="my-account-page_order-history" title="Order history">
           <OrderHistory />
         </SfContentPage>
 
-        <SfContentPage title="My reviews">
+        <SfContentPage data-cy="my-account-page_my-reviews" title="My reviews">
           <MyReviews />
         </SfContentPage>
       </SfContentCategory>
 
-      <SfContentPage title="Log out" />
+      <SfContentPage data-cy="my-account-page_log-out" title="Log out" />
     </SfContentPages>
   </div>
 </template>

@@ -5,7 +5,6 @@
     </p>
 
     <SfRadio
-      v-e2e="'payment-method'"
       v-for="method in shippingMethods"
       :key="method.value"
       :label="method.label"

@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <SfButton
+      data-cy="locale-select_change-langauge"
       class="container__lang container__lang--selected"
       @click="isLangModalOpen = !isLangModalOpen"
     >

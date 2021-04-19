@@ -1,7 +1,7 @@
 <template>
   <div>
     <TopBar class="desktop-only" />
-    <div id="layout">
+    <div id="layout" >
       <AppHeader />
       <nuxt />
       <BottomNavigation />
@@ -19,6 +19,8 @@ import CartSidebar from '~/components/CartSidebar.vue';
 import LoginModal from '~/components/LoginModal.vue';
 
 export default {
+  name: 'AccountLayout',
+
   components: {
     TopBar,
     AppHeader,
@@ -30,11 +32,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~@storefront-ui/vue/styles';
-
-:root {
-  @include assign-color-variants(--c-primary, --_c-blue-primary);
-}
+@import "~@storefront-ui/vue/styles";
 
 body {
   padding: 0;

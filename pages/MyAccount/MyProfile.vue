@@ -1,7 +1,7 @@
 <template>
   <SfTabs :open-tab="1">
     <!-- Personal data update -->
-    <SfTab title="Personal data">
+    <SfTab data-cy="my-profile-tab_personal-data" title="Personal data">
       <p class="message">
         {{ $t('Feel free to edit') }}
       </p>
@@ -15,7 +15,7 @@
     </SfTab>
 
     <!-- Password reset -->
-    <SfTab title="Password change">
+    <SfTab data-cy="my-profile-tab_password-change" title="Password change">
       <p class="message">
         {{ $t('Change password your account') }}:<br />
         {{ $t('Your current email address is') }}

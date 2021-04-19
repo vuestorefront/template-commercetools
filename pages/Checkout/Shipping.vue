@@ -1,7 +1,6 @@
 <template>
   <ValidationObserver v-slot="{ handleSubmit, dirty, reset }">
     <SfHeading
-      v-e2e="'heading-shipping'"
       :level="3"
       :title="$t('Shipping details')"
       class="sf-heading--left sf-heading--no-underline title"
@@ -25,7 +24,6 @@
           slim
         >
           <SfInput
-            v-e2e="'firstName'"
             :value="shippingDetails.firstName"
             @input="firstName => changeShippingDetails('firstName', firstName)"
             label="First name"
@@ -43,7 +41,6 @@
           slim
         >
           <SfInput
-            v-e2e="'lastName'"
             :value="shippingDetails.lastName"
             @input="lastName => changeShippingDetails('lastName', lastName)"
             label="Last name"
@@ -61,7 +58,6 @@
           slim
         >
           <SfInput
-            v-e2e="'streetName'"
             :value="shippingDetails.streetName"
             @input="streetName => changeShippingDetails('streetName', streetName)"
             label="Street name"
@@ -79,7 +75,6 @@
           slim
         >
           <SfInput
-            v-e2e="'apartment'"
             :value="shippingDetails.apartment"
             @input="apartment => changeShippingDetails('apartment', apartment)"
             label="House/Apartment number"
@@ -97,7 +92,6 @@
           slim
         >
           <SfInput
-            v-e2e="'city'"
             :value="shippingDetails.city"
             @input="city => changeShippingDetails('city', city)"
             label="City"
@@ -115,7 +109,6 @@
           slim
         >
           <SfSelect
-            v-e2e="'state'"
             :value="shippingDetails.state"
             @input="state => changeShippingDetails('state', state)"
             label="State/Province"
@@ -142,7 +135,6 @@
           slim
         >
           <SfSelect
-            v-e2e="'country'"
             :value="shippingDetails.country"
             @input="country => changeShippingDetails('country', country)"
             label="Country"
@@ -168,7 +160,6 @@
           slim
         >
           <SfInput
-            v-e2e="'zipcode'"
             :value="shippingDetails.postalCode"
             @input="postalCode => changeShippingDetails('postalCode', postalCode)"
             label="Zip-code"
@@ -186,7 +177,6 @@
           slim
         >
           <SfInput
-            v-e2e="'phone'"
             :value="shippingDetails.phone"
             @input="phone => changeShippingDetails('phone', phone)"
             label="Phone number"
@@ -209,7 +199,6 @@
       <div class="form">
         <div class="form__action">
           <SfButton
-            v-e2e="'select-shipping'"
             class="form__action-button"
             type="submit"
             :disabled="!canMoveForward"

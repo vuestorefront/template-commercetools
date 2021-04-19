@@ -1,7 +1,6 @@
 <template>
   <ValidationObserver v-slot="{ handleSubmit, reset }">
     <SfHeading
-      v-e2e="'heading-billing'"
       :level="3"
       :title="$t('Billing address')"
       class="sf-heading--left sf-heading--no-underline title"
@@ -18,7 +17,6 @@
         @setCurrentAddress="handleSetCurrentAddress"
       />
       <SfCheckbox
-        v-e2e="'copy-address'"
         :selected="sameAsShipping"
         @change="handleCheckSameAddress"
         label="Copy address data from shipping"
@@ -33,7 +31,6 @@
           slim
         >
           <SfInput
-            v-e2e="'firstName'"
             :value="billingDetails.firstName"
             @input="firstName => changeBillingDetails('firstName', firstName)"
             label="First name"
@@ -51,7 +48,6 @@
           slim
         >
           <SfInput
-            v-e2e="'lastName'"
             :value="billingDetails.lastName"
             @input="lastName => changeBillingDetails('lastName', lastName)"
             label="Last name"
@@ -69,7 +65,6 @@
           slim
         >
           <SfInput
-            v-e2e="'streetName'"
             :value="billingDetails.streetName"
             @input="streetName => changeBillingDetails('streetName', streetName)"
             label="Street name"
@@ -87,7 +82,6 @@
           slim
         >
           <SfInput
-            v-e2e="'apartment'"
             :value="billingDetails.apartment"
             @input="apartment => changeBillingDetails('apartment', apartment)"
             label="House/Apartment number"
@@ -105,7 +99,6 @@
           slim
         >
           <SfInput
-            v-e2e="'city'"
             :value="billingDetails.city"
             @input="city => changeBillingDetails('city', city)"
             label="City"
@@ -123,7 +116,6 @@
           slim
         >
           <SfSelect
-            v-e2e="'state'"
             :value="billingDetails.state"
             @input="state => changeBillingDetails('state', state)"
             label="State/Province"
@@ -150,7 +142,6 @@
           slim
         >
           <SfSelect
-            v-e2e="'country'"
             :value="billingDetails.country"
             @input="country => changeBillingDetails('country', country)"
             label="Country"
@@ -176,7 +167,6 @@
           slim
         >
           <SfInput
-            v-e2e="'zipcode'"
             :value="billingDetails.postalCode"
             @input="postalCode => changeBillingDetails('postalCode', postalCode)"
             label="Zip-code"
@@ -194,7 +184,6 @@
           slim
         >
           <SfInput
-            v-e2e="'phone'"
             :value="billingDetails.phone"
             @input="phone => changeBillingDetails('phone', phone)"
             label="Phone number"
@@ -217,7 +206,6 @@
       <div class="form">
         <div class="form__action">
           <SfButton
-            v-e2e="'continue-to-payment'"
             class="form__action-button"
             type="submit"
             :disabled="!canMoveForward"

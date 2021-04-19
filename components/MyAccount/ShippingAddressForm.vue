@@ -12,6 +12,7 @@
           class="form__element"
         >
           <SfInput
+            data-cy="shipping-details-input_firstName"
             v-model="form.firstName"
             name="firstName"
             label="First Name"
@@ -26,6 +27,7 @@
           class="form__element"
         >
           <SfInput
+            data-cy="shipping-details-input_lastName"
             v-model="form.lastName"
             name="lastName"
             label="Last Name"
@@ -41,6 +43,7 @@
         class="form__element"
       >
         <SfInput
+          data-cy="shipping-details-input_streetName"
           v-model="form.streetName"
           name="streetName"
           label="Street Name"
@@ -50,6 +53,7 @@
         />
       </ValidationProvider>
       <SfInput
+        data-cy="shipping-details-input_apartment"
         v-model="form.apartment"
         name="apartment"
         label="House/Apartment number"
@@ -63,6 +67,7 @@
           class="form__element"
         >
           <SfInput
+            data-cy="shipping-details-input_city"
             v-model="form.city"
             name="city"
             label="City"
@@ -104,6 +109,7 @@
           class="form__element"
         >
           <SfInput
+            data-cy="shipping-details-input_zipCode"
             v-model="form.postalCode"
             name="zipCode"
             label="Zip-code"
@@ -118,6 +124,7 @@
           class="form__element"
         >
           <SfSelect
+            data-cy="shipping-details-select_country"
             class="form__select sf-select--underlined"
             v-model="form.country"
             name="country"
@@ -142,6 +149,7 @@
         class="form__element"
       >
         <SfInput
+          data-cy="shipping-details-input_phoneNumber"
           v-model="form.phone"
           name="phone"
           label="Phone number"

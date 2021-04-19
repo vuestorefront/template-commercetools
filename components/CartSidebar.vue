@@ -1,7 +1,6 @@
 <template>
   <div id="cart">
     <SfSidebar
-      v-e2e="'sidebar-cart'"
       :visible="isCartSidebarOpen"
       title="My Cart"
       class="sf-sidebar--right"
@@ -20,6 +19,7 @@
           <div class="collected-product-list">
             <transition-group name="sf-fade" tag="div">
               <SfCollectedProduct
+                data-cy="collected-product-cart-sidebar"
                 v-for="product in products"
                 :key="cartGetters.getItemSku(product)"
                 :image="cartGetters.getItemImage(product)"
@@ -76,7 +76,6 @@
             </SfProperty>
             <nuxt-link to="/checkout/shipping">
               <SfButton
-                v-e2e="'go-to-checkout-btn'"
                 class="sf-button--full-width color-secondary"
                 @click="toggleCartSidebar"
               >

@@ -7,6 +7,7 @@
       class="tab-orphan"
     >
       <SfTab
+        data-cy="shipping-details-tab_change"
         :title="isNewAddress ? 'Add the address' : 'Update the address'">
         <p class="message">
           {{ $t('Contact details updated') }}
@@ -24,7 +25,7 @@
       :open-tab="1"
       key="address-list"
       class="tab-orphan">
-      <SfTab title="Shipping details">
+      <SfTab data-cy="shipping-details-tab_details" title="Shipping details">
         <p class="message">
           {{ $t('Manage shipping addresses') }}
         </p>
@@ -40,6 +41,7 @@
             </div>
             <div class="shipping__actions">
               <SfIcon
+                data-cy="shipping-details-icon_delete"
                 icon="cross"
                 color="gray"
                 size="14px"
@@ -48,11 +50,13 @@
                 @click="removeAddress(address)"
               />
               <SfButton
+                data-cy="shipping-details-btn_change"
                 @click="changeAddress(address)">
                 {{ $t('Change') }}
               </SfButton>
 
               <SfButton
+                data-cy="shipping-details-btn_delete"
                 class="color-light shipping__button-delete desktop-only"
                 @click="removeAddress(address)">
                 {{ $t('Delete') }}
@@ -61,6 +65,7 @@
           </div>
         </transition-group>
         <SfButton
+          data-cy="shipping-details-btn_add"
           class="action-button"
           @click="changeAddress()">
           {{ $t('Add new address') }}
