@@ -56,7 +56,6 @@ export default {
     // to core soon
     '@nuxtjs/pwa',
     ['@vue-storefront/nuxt', {
-      coreDevelopment: true,
       useRawSource: {
         dev: [
           '@vue-storefront/commercetools',
@@ -68,19 +67,7 @@ export default {
         ]
       }
     }],
-    // @core-development-only-start
-    ['@vue-storefront/nuxt-theme', {
-      generate: {
-        replace: {
-          apiClient: '@vue-storefront/commercetools-api',
-          composables: '@vue-storefront/commercetools'
-        }
-      }
-    }],
-    // @core-development-only-end
-    /* project-only-start
     ['@vue-storefront/nuxt-theme'],
-    project-only-end */
     ['@vue-storefront/commercetools/nuxt', {
       i18n: {
         useNuxtI18nConfig: true
