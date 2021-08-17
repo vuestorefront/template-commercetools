@@ -49,6 +49,7 @@
             {{ $t('Size guide') }}
           </SfButton>
           <SfSelect
+            v-e2e="'size-select'"
             v-if="options.size"
             :value="configuration.size"
             @input="size => updateFilter({ size })"
@@ -74,6 +75,30 @@
               @click="updateFilter({color})"
             />
           </div>
+          <SfTabs :open-tab="1" class="product__tabs">
+            <SfTab title="Shipping">
+              Shipping
+            </SfTab>
+            <SfTab
+              v-if="channels.length > 0"
+              title="Click and Collect"
+            >
+              <SfSelect
+                v-e2e="'channel-select'"
+                v-model="channelId"
+                label="Select Channel"
+                class="sf-select--underlined product__select-size"
+              >
+                <SfSelectOption
+                  v-for="{ channel } in channels"
+                  :key="channel.id"
+                  :value="channel.id"
+                >
+                  {{channel.name}}
+                </SfSelectOption>
+              </SfSelect>
+            </SfTab>
+          </SfTabs>
           <SfAddToCart
             v-e2e="'product_add-to-cart'"
             :stock="stock"
@@ -81,7 +106,7 @@
             :disabled="loading"
             :canAddToCart="stock > 0"
             class="product__add-to-cart"
-            @click="addItem({ product, quantity: parseInt(qty) })"
+            @click="addToCart"
           />
         </div>
 
@@ -89,7 +114,7 @@
           <SfTabs :open-tab="1" class="product__tabs">
             <SfTab title="Description">
               <div class="product__description">
-                  {{ $t('Product description') }}
+                {{ $t('Product description') }}
               </div>
               <SfProperty
                 v-for="(property, i) in properties"
@@ -124,18 +149,18 @@
               title="Additional Information"
               class="product__additional-info"
             >
-            <div class="product__additional-info">
-              <p class="product__additional-info__title">{{ $t('Brand') }}</p>
-              <p>{{ brand }}</p>
-              <p class="product__additional-info__title">{{ $t('Instruction1') }}</p>
-              <p class="product__additional-info__paragraph">
-                {{ $t('Instruction2') }}
-              </p>
-              <p class="product__additional-info__paragraph">
-                {{ $t('Instruction3') }}
-              </p>
-              <p>{{ careInstructions }}</p>
-            </div>
+              <div class="product__additional-info">
+                <p class="product__additional-info__title">{{ $t('Brand') }}</p>
+                <p>{{ brand }}</p>
+                <p class="product__additional-info__title">{{ $t('Instruction1') }}</p>
+                <p class="product__additional-info__paragraph">
+                  {{ $t('Instruction2') }}
+                </p>
+                <p class="product__additional-info__paragraph">
+                  {{ $t('Instruction3') }}
+                </p>
+                <p>{{ careInstructions }}</p>
+              </div>
             </SfTab>
           </SfTabs>
         </LazyHydrate>
@@ -152,10 +177,6 @@
 
     <LazyHydrate when-visible>
       <InstagramFeed />
-    </LazyHydrate>
-
-    <LazyHydrate when-visible>
-      <MobileStoreBanner />
     </LazyHydrate>
 
   </div>
@@ -184,14 +205,25 @@ import {
 import InstagramFeed from '~/components/InstagramFeed.vue';
 import RelatedProducts from '~/components/RelatedProducts.vue';
 import { ref, computed } from '@vue/composition-api';
-import { useProduct, useCart, productGetters, useReview, reviewGetters } from '@vue-storefront/commercetools';
+import {
+  useProduct,
+  useCart,
+  productGetters,
+  useReview,
+  reviewGetters,
+  useStore
+} from '@vue-storefront/commercetools';
 import { onSSR } from '@vue-storefront/core';
-import MobileStoreBanner from '~/components/MobileStoreBanner.vue';
 import LazyHydrate from 'vue-lazy-hydration';
+import cacheControl from './../helpers/cacheControl';
 
 export default {
   name: 'Product',
   transition: 'fade',
+  middleware: cacheControl({
+    'max-age': 60,
+    'stale-when-revalidate': 5
+  }),
   setup(props, context) {
     const qty = ref(1);
     const { id } = context.root.$route.params;
@@ -199,12 +231,38 @@ export default {
     const { products: relatedProducts, search: searchRelatedProducts, loading: relatedLoading } = useProduct('relatedProducts');
     const { addItem, loading } = useCart();
     const { reviews: productReviews, search: searchReviews } = useReview('productReviews');
+    const { response: stores } = useStore();
+
+    // to be added on local useStore factory
+    function getSelected(stores) {
+      return stores.results?.find((result) => result.key === stores._selectedStore);
+    }
 
     const product = computed(() => productGetters.getFiltered(products.value, { master: true, attributes: context.root.$route.query })[0]);
     const options = computed(() => productGetters.getAttributes(products.value, ['color', 'size']));
     const configuration = computed(() => productGetters.getAttributes(product.value, ['color', 'size']));
     const categories = computed(() => productGetters.getCategoryIds(product.value));
     const reviews = computed(() => reviewGetters.getItems(productReviews.value));
+    const selectedStore = computed(() => getSelected(stores.value));
+
+    const channelId = ref(null);
+    const channels = computed(() => {
+      const productChannels = product.value?.availability?.channels?.results ?? [];
+      return productChannels;
+    });
+
+    const selectedChannel = computed(() => {
+      const selected = channels.value.find((item) => (item.channel.id === channelId.value));
+
+      return (selected?.channel?.roles && selected?.channel?.id) ? {
+        ...(selected.channel.roles.includes('InventorySupply') && { supplyChannel: selected.channel.id }),
+        ...(selected.channel.roles.includes('ProductDistribution') && { distributionChannel: selected.channel.id })
+      } : null;
+    });
+
+    const addToCart = () => {
+      addItem({ product: product.value, quantity: parseInt(qty.value), customQuery: selectedChannel.value });
+    };
 
     // TODO: Breadcrumbs are temporary disabled because productGetters return undefined. We have a mocks in data
     // const breadcrumbs = computed(() => productGetters.getBreadcrumbs ? productGetters.getBreadcrumbs(product.value) : props.fallbackBreadcrumbs);
@@ -232,9 +290,11 @@ export default {
     };
 
     return {
+      addToCart,
       updateFilter,
       configuration,
       product,
+      products,
       reviews,
       reviewGetters,
       averageRating: computed(() => productGetters.getAverageRating(product.value)),
@@ -243,10 +303,13 @@ export default {
       relatedLoading,
       options,
       qty,
-      addItem,
       loading,
       productGetters,
-      productGallery
+      productGallery,
+      channels,
+      channelId,
+      selectedChannel,
+      selectedStore
     };
   },
   components: {
@@ -269,7 +332,6 @@ export default {
     SfButton,
     InstagramFeed,
     RelatedProducts,
-    MobileStoreBanner,
     LazyHydrate
   },
   data() {
@@ -296,7 +358,7 @@ export default {
       description: 'Find stunning women cocktail and party dresses. Stand out in lace and metallic cocktail dresses and party dresses from all your favorite brands.',
       detailsIsActive: false,
       brand:
-          'Brand name is the perfect pairing of quality and design. This label creates major everyday vibes with its collection of modern brooches, silver and gold jewellery, or clips it back with hair accessories in geo styles.',
+        'Brand name is the perfect pairing of quality and design. This label creates major everyday vibes with its collection of modern brooches, silver and gold jewellery, or clips it back with hair accessories in geo styles.',
       careInstructions: 'Do not wash!',
       breadcrumbs: [
         {
@@ -374,11 +436,11 @@ export default {
   }
   &__count {
     @include font(
-      --count-font,
-      var(--font-weight--normal),
-      var(--font-size--sm),
-      1.4,
-      var(--font-family--secondary)
+        --count-font,
+        var(--font-weight--normal),
+        var(--font-size--sm),
+        1.4,
+        var(--font-family--secondary)
     );
     color: var(--c-text);
     text-decoration: none;
@@ -386,11 +448,11 @@ export default {
   }
   &__description {
     @include font(
-      --product-description-font,
-      var(--font-weight--light),
-      var(--font-size--base),
-      1.6,
-      var(--font-family--primary)
+        --product-description-font,
+        var(--font-weight--light),
+        var(--font-size--base),
+        1.6,
+        var(--font-family--primary)
     );
   }
   &__select-size {
@@ -401,11 +463,11 @@ export default {
   }
   &__colors {
     @include font(
-      --product-color-font,
-      var(--font-weight--normal),
-      var(--font-size--lg),
-      1.6,
-      var(--font-family--secondary)
+        --product-color-font,
+        var(--font-weight--normal),
+        var(--font-size--lg),
+        1.6,
+        var(--font-family--secondary)
     );
     display: flex;
     align-items: center;
@@ -454,11 +516,11 @@ export default {
   &__additional-info {
     color: var(--c-link);
     @include font(
-      --additional-info-font,
-      var(--font-weight--light),
-      var(--font-size--sm),
-      1.6,
-      var(--font-family--primary)
+        --additional-info-font,
+        var(--font-weight--light),
+        var(--font-size--sm),
+        1.6,
+        var(--font-family--primary)
     );
     &__title {
       font-weight: var(--font-weight--normal);
