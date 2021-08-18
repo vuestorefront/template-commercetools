@@ -3,6 +3,7 @@
     <SfHeader
       class="sf-header--has-mobile-search"
       :class="{'header-on-top': isSearchOpen}"
+      :isNavVisible="isMobileMenuOpen"
     >
       <!-- TODO: add mobile view buttons after SFUI team PR -->
       <template #logo>
@@ -11,11 +12,10 @@
         </nuxt-link>
       </template>
       <template #navigation>
-        <SfHeaderNavigationItem class="nav-item" v-e2e="'app-header-url_women'" label="WOMEN" :link="localePath('/c/women')"/>
-        <SfHeaderNavigationItem class="nav-item"  v-e2e="'app-header-url_men'" label="MEN" :link="localePath('/c/men')" />
+        <HeaderNavigation :isMobile="isMobile" />
       </template>
       <template #aside>
-        <LocaleSelector class="smartphone-only" />
+        <StoreLocaleSelector class="smartphone-only" />
       </template>
       <template #header-icons>
         <div class="sf-header__icons">
@@ -95,14 +95,14 @@
 </template>
 
 <script>
-import { SfHeader, SfImage, SfIcon, SfButton, SfBadge, SfSearchBar, SfOverlay } from '@storefront-ui/vue';
+import { SfHeader, SfImage, SfIcon, SfButton, SfBadge, SfSearchBar, SfOverlay, SfMenuItem, SfLink } from '@storefront-ui/vue';
 import { useUiState } from '~/composables';
-import { useCart, useWishlist, useUser, cartGetters } from '@vue-storefront/commercetools';
+import { useCart, useUser, cartGetters } from '@vue-storefront/commercetools';
 import { computed, ref, onBeforeUnmount, watch } from '@vue/composition-api';
-import { onSSR } from '@vue-storefront/core';
 import { useUiHelpers } from '~/composables';
-import LocaleSelector from './LocaleSelector';
+import StoreLocaleSelector from './StoreLocaleSelector';
 import SearchResults from '~/components/SearchResults';
+import HeaderNavigation from './HeaderNavigation';
 import { clickOutside } from '@storefront-ui/vue/src/utilities/directives/click-outside/click-outside-directive.js';
 import {
   mapMobileObserver,
@@ -115,25 +115,28 @@ export default {
   components: {
     SfHeader,
     SfImage,
-    LocaleSelector,
+    StoreLocaleSelector,
     SfIcon,
     SfButton,
     SfBadge,
     SfSearchBar,
     SearchResults,
-    SfOverlay
+    SfOverlay,
+    SfMenuItem,
+    SfLink,
+    HeaderNavigation
   },
   directives: { clickOutside },
   setup(props, { root }) {
-    const { toggleCartSidebar, toggleWishlistSidebar, toggleLoginModal } = useUiState();
+    const { toggleCartSidebar, toggleWishlistSidebar, toggleLoginModal, isMobileMenuOpen } = useUiState();
     const { setTermForUrl, getFacetsFromURL } = useUiHelpers();
     const { isAuthenticated, load: loadUser } = useUser();
-    const { cart, load: loadCart } = useCart();
-    const { load: loadWishlist } = useWishlist();
+    const { cart } = useCart();
     const term = ref(getFacetsFromURL().phrase);
     const isSearchOpen = ref(false);
     const searchBarRef = ref(null);
     const result = ref(null);
+    const isMobile = ref(mapMobileObserver().isMobile.get());
 
     const cartTotalItems = computed(() => {
       const count = cartGetters.getTotalItems(cart.value);
@@ -141,6 +144,8 @@ export default {
     });
 
     const accountIcon = computed(() => isAuthenticated.value ? 'profile_fill' : 'profile');
+
+    loadUser();
 
     // TODO: https://github.com/DivanteLtd/vue-storefront/issues/4927
     const handleAccountClick = async () => {
@@ -150,12 +155,6 @@ export default {
 
       toggleLoginModal();
     };
-
-    onSSR(async () => {
-      await loadUser();
-      await loadCart();
-      await loadWishlist();
-    });
 
     const closeSearch = () => {
       if (!isSearchOpen.value) return;
@@ -173,8 +172,6 @@ export default {
       result.value = mockedSearchProducts;
 
     }, 1000);
-
-    const isMobile = computed(() => mapMobileObserver().isMobile.get());
 
     const closeOrFocusSearchBar = () => {
       if (isMobile.value) {
@@ -215,6 +212,7 @@ export default {
       closeOrFocusSearchBar,
       searchBarRef,
       isMobile,
+      isMobileMenuOpen,
       removeSearchResults
     };
   }
@@ -236,6 +234,9 @@ export default {
 }
 .nav-item {
   --header-navigation-item-margin: 0 var(--spacer-base);
+  .sf-header-navigation-item__item--mobile {
+    display: none;
+  }
 }
 
 .cart-badge {
