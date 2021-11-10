@@ -1,5 +1,4 @@
 import webpack from 'webpack';
-import { VSF_LOCALE_COOKIE } from '@vue-storefront/core';
 import theme from './themeConfig';
 
 export default {
@@ -16,26 +15,10 @@ export default {
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
     link: [
-      { rel: 'icon',
+      {
+        rel: 'icon',
         type: 'image/x-icon',
         href: '/favicon.ico'
-      },
-      {
-        rel: 'preconnect',
-        href: 'https://fonts.gstatic.com',
-        crossorigin: 'crossorigin'
-      },
-      {
-        rel: 'preload',
-        href: 'https://fonts.googleapis.com/css?family=Raleway:300,400,400i,500,600,700|Roboto:300,300i,400,400i,500,700&display=swap',
-        as: 'style'
-      },
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css?family=Raleway:300,400,400i,500,600,700|Roboto:300,300i,400,400i,500,700&display=swap',
-        media: 'print',
-        onload: 'this.media=\'all\'',
-        once: true
       }
     ],
     script: []
@@ -53,10 +36,15 @@ export default {
   },
   buildModules: [
     // to core
+    '@nuxtjs/composition-api/module',
     '@nuxt/typescript-build',
     '@nuxtjs/style-resources',
+    '@nuxtjs/google-fonts',
     // to core soon
     '@nuxtjs/pwa',
+    ['@vue-storefront/commercetools/nuxt', {
+      i18n: { useNuxtI18nConfig: true }
+    }],
     ['@vue-storefront/nuxt', {
       coreDevelopment: true,
       useRawSource: {
@@ -70,13 +58,12 @@ export default {
         ]
       }
     }],
-    ['@vue-storefront/nuxt-theme'],
-    ['@vue-storefront/commercetools/nuxt', {
-      i18n: { useNuxtI18nConfig: true }
-    }]
+    ,['@vue-storefront/nuxt-theme'],
   ],
   modules: [
-    'nuxt-i18n',
+    ['nuxt-i18n', {
+      baseUrl: process.env.BASE_URL || 'http://localhost:3000'
+    }],
     'cookie-universal-nuxt',
     'vue-scrollto/nuxt',
     '@vue-storefront/middleware/nuxt'
@@ -117,9 +104,7 @@ export default {
         }
       }
     },
-    detectBrowserLanguage: {
-      cookieKey: VSF_LOCALE_COOKIE
-    }
+    detectBrowserLanguage: false
   },
   styleResources: {
     scss: [require.resolve('@storefront-ui/shared/styles/_helpers.scss', { paths: [process.cwd()] })]
@@ -128,6 +113,7 @@ export default {
     theme
   },
   build: {
+    extractCSS: true,
     babel: {
       plugins: [
         ['@babel/plugin-proposal-private-methods', { loose: true }]
@@ -144,32 +130,25 @@ export default {
           lastCommit: process.env.LAST_COMMIT || ''
         })
       })
-    ],
-    extend (config, ctx) {
-      if (ctx && ctx.isClient) {
-        config.optimization = {
-          ...config.optimization,
-          mergeDuplicateChunks: true,
-          splitChunks: {
-            ...config.optimization.splitChunks,
-            chunks: 'all',
-            automaticNameDelimiter: '.',
-            maxSize: 128_000,
-            maxInitialRequests: Number.POSITIVE_INFINITY,
-            minSize: 0,
-            maxAsyncRequests: 10,
-            cacheGroups: {
-              vendor: {
-                test: /[/\\]node_modules[/\\]/,
-                name: (module) => `${module
-                  .context
-                  .match(/[/\\]node_modules[/\\](.*?)([/\\]|$)/)[1]
-                  .replace(/[.@_]/gm, '')}`
-              }
-            }
-          }
-        };
-      }
+    ]
+  },
+  pwa: {
+    meta: {
+      theme_color: '#5ECE7B'
     }
+  },
+
+  googleFonts: {
+    families: {
+      Raleway: {
+        wght: [300, 400, 500, 600, 700],
+        ital: [400]
+      },
+      Roboto: {
+        wght: [300, 400, 500, 700],
+        ital: [300, 400]
+      }
+    },
+    display: 'swap'
   }
 };
