@@ -58,7 +58,7 @@ export default {
         ]
       }
     }],
-    ,['@vue-storefront/nuxt-theme'],
+    ['@vue-storefront/nuxt-theme'],
   ],
   modules: [
     ['nuxt-i18n', {
